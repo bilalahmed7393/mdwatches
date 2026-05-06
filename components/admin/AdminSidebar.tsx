@@ -12,7 +12,7 @@ import {
   Settings,
   Users,
   Bell,
-  Image as ImageIcon,
+  UserCog,
   LogOut,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -27,10 +27,10 @@ const NAV = [
   { href: "/admin/offers", label: "Offers", icon: Mail },
   { href: "/admin/collections", label: "Collections", icon: Tag },
   { href: "/admin/promo-codes", label: "Promo codes", icon: TicketPercent },
-  { href: "/admin/instagram", label: "Instagram", icon: ImageIcon },
   { href: "/admin/analytics", label: "Analytics", icon: BarChart3 },
   { href: "/admin/waitlist", label: "Waitlist", icon: Bell },
   { href: "/admin/settings", label: "Settings", icon: Settings },
+  { href: "/admin/account", label: "My account", icon: UserCog },
 ];
 
 export function AdminSidebar({ role, email }: { role: "owner" | "staff"; email: string }) {

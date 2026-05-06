@@ -12,10 +12,12 @@ import { Card, CardContent } from "@/components/ui/card";
 import { createAdminClient } from "@/lib/supabase/admin";
 import type { DashboardStats, Order, Offer } from "@/types/database";
 import { formatPrice, formatDate } from "@/lib/utils/format";
+import { getServerCurrency } from "@/lib/utils/format-server";
 
 export const dynamic = "force-dynamic";
 
 export default async function DashboardPage() {
+  const currency = await getServerCurrency();
   const supabase = createAdminClient();
 
   const [statsRes, recentOrdersRes, recentOffersRes] = await Promise.all([
@@ -53,7 +55,7 @@ export default async function DashboardPage() {
         <KPI label="Pending offers" value={stats?.pending_offers ?? 0} icon={Mail} />
         <KPI
           label="Confirmed revenue"
-          value={formatPrice(stats?.confirmed_revenue ?? 0)}
+          value={formatPrice(stats?.confirmed_revenue ?? 0, currency)}
           icon={DollarSign}
         />
       </div>
@@ -80,7 +82,7 @@ export default async function DashboardPage() {
                     </div>
                   </Link>
                   <div className="text-right">
-                    <div className="font-medium">{formatPrice(o.final_price)}</div>
+                    <div className="font-medium">{formatPrice(o.final_price, currency)}</div>
                     <div className="text-xs text-muted-foreground">
                       {o.status.replace(/_/g, " ")}
                     </div>
@@ -110,7 +112,7 @@ export default async function DashboardPage() {
                     <div className="text-xs text-muted-foreground">{formatDate(o.created_at)}</div>
                   </div>
                   <div className="text-right">
-                    <div className="font-medium">{formatPrice(o.offered_price)}</div>
+                    <div className="font-medium">{formatPrice(o.offered_price, currency)}</div>
                     <div className="text-xs text-muted-foreground">{o.status}</div>
                   </div>
                 </li>

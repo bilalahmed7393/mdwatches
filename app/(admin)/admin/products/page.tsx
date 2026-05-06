@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { ProductRowActions } from "@/components/admin/ProductRowActions";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { formatPrice } from "@/lib/utils/format";
+import { getServerCurrency } from "@/lib/utils/format-server";
 import type { Product, ProductImage } from "@/types/database";
 
 export const dynamic = "force-dynamic";
@@ -17,6 +18,7 @@ interface PageProps {
 
 export default async function AdminProductsPage({ searchParams }: PageProps) {
   const sp = await searchParams;
+  const currency = await getServerCurrency();
   const supabase = createAdminClient();
   let query = supabase
     .from("products")
@@ -63,8 +65,8 @@ export default async function AdminProductsPage({ searchParams }: PageProps) {
         })}
       </div>
 
-      <div className="overflow-hidden rounded-md border bg-background">
-        <table className="w-full text-sm">
+      <div className="overflow-x-auto rounded-md border bg-background">
+        <table className="w-full min-w-[800px] text-sm">
           <thead className="border-b bg-secondary/40 text-left">
             <tr>
               <th className="p-3"></th>
@@ -114,7 +116,7 @@ export default async function AdminProductsPage({ searchParams }: PageProps) {
                     </Badge>
                   </td>
                   <td className="p-3">{p.stock_quantity}</td>
-                  <td className="p-3">{formatPrice(p.price)}</td>
+                  <td className="p-3">{formatPrice(p.price, currency)}</td>
                   <td className="p-3">{p.is_featured ? "★" : "—"}</td>
                   <td className="p-3 text-right">
                     <ProductRowActions productId={p.id} slug={p.slug} />

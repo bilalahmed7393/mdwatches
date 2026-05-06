@@ -1,11 +1,13 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { formatPrice } from "@/lib/utils/format";
+import { getServerCurrency } from "@/lib/utils/format-server";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Admin · Analytics" };
 
 export default async function AdminAnalyticsPage() {
+  const currency = await getServerCurrency();
   const supabase = createAdminClient();
   const since = new Date();
   since.setDate(since.getDate() - 30);
@@ -49,7 +51,7 @@ export default async function AdminAnalyticsPage() {
         <KPI label="Events" value={events.length} />
         <KPI label="Orders" value={orders.length} />
         <KPI label="Confirmed orders" value={confirmedOrders.length} />
-        <KPI label="Revenue" value={formatPrice(revenue)} />
+        <KPI label="Revenue" value={formatPrice(revenue, currency)} />
       </div>
 
       <div className="rounded-md border bg-background p-5">

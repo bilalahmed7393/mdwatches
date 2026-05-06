@@ -8,12 +8,14 @@ import { PaymentProofViewer } from "@/components/admin/PaymentProofViewer";
 import { createAdminClient } from "@/lib/supabase/admin";
 import type { Order, Product } from "@/types/database";
 import { formatDate, formatPrice, buildWhatsappLink } from "@/lib/utils/format";
+import { getServerCurrency } from "@/lib/utils/format-server";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Admin · Order detail" };
 
 export default async function AdminOrderDetail({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
+  const currency = await getServerCurrency();
   const supabase = createAdminClient();
   const { data } = await supabase
     .from("orders")
@@ -70,7 +72,7 @@ export default async function AdminOrderDetail({ params }: { params: Promise<{ i
 
           <div className="flex items-baseline justify-between border-t pt-3">
             <span className="text-sm text-muted-foreground">Total</span>
-            <span className="font-display text-2xl">{formatPrice(order.final_price)}</span>
+            <span className="font-display text-2xl">{formatPrice(order.final_price, currency)}</span>
           </div>
 
           {order.payment_proof_url && (

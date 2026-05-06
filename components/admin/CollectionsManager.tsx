@@ -105,8 +105,8 @@ export function CollectionsManager({ initial }: Props) {
 
   return (
     <div className="space-y-4">
-      <div className="overflow-hidden rounded-md border bg-background">
-        <table className="w-full text-sm">
+      <div className="overflow-x-auto rounded-md border bg-background">
+        <table className="w-full min-w-[640px] text-sm">
           <thead className="border-b bg-secondary/40 text-left">
             <tr>
               <th className="p-3 w-20">Cover</th>

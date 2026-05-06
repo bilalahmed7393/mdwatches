@@ -1,5 +1,4 @@
-import { Badge } from "@/components/ui/badge";
-import { InviteUserForm } from "@/components/admin/InviteUserForm";
+import { UsersManager } from "@/components/admin/UsersManager";
 import { requireOwner } from "@/lib/auth";
 import { createAdminClient } from "@/lib/supabase/admin";
 import type { AdminProfile } from "@/types/database";
@@ -8,47 +7,35 @@ export const dynamic = "force-dynamic";
 export const metadata = { title: "Admin · Users" };
 
 export default async function AdminUsersPage() {
-  await requireOwner();
+  const ctx = await requireOwner();
   const supabase = createAdminClient();
-  const { data } = await supabase
+  const { data: profiles } = await supabase
     .from("admin_profiles")
     .select("*")
     .order("created_at", { ascending: true });
-  const users = (data ?? []) as unknown as AdminProfile[];
+
+  // Fetch matching auth users to get emails
+  const { data: usersList } = await supabase.auth.admin.listUsers({ perPage: 1000 });
+  const emailById = new Map<string, string>();
+  for (const u of usersList?.users ?? []) {
+    if (u.email) emailById.set(u.id, u.email);
+  }
+
+  const users = (profiles ?? []).map((p) => ({
+    ...(p as AdminProfile),
+    email: emailById.get((p as AdminProfile).id) ?? "—",
+  }));
 
   return (
     <div className="space-y-6">
       <div>
         <h1 className="font-display text-3xl tracking-tight">Admin users</h1>
-        <p className="text-sm text-muted-foreground">Owner-only.</p>
+        <p className="text-sm text-muted-foreground">
+          Owner-only. Add, remove, or update other admins. To change your own info use{" "}
+          <a href="/admin/account" className="underline">My account</a>.
+        </p>
       </div>
-
-      <div className="rounded-md border bg-background">
-        <table className="w-full text-sm">
-          <thead className="border-b bg-secondary/40 text-left">
-            <tr>
-              <th className="p-3">Name</th>
-              <th className="p-3">Role</th>
-              <th className="p-3">Added</th>
-              <th className="p-3"></th>
-            </tr>
-          </thead>
-          <tbody className="divide-y">
-            {users.map((u) => (
-              <tr key={u.id}>
-                <td className="p-3">{u.full_name ?? "—"}</td>
-                <td className="p-3"><Badge variant="outline">{u.role}</Badge></td>
-                <td className="p-3 text-xs text-muted-foreground">
-                  {new Date(u.created_at).toLocaleDateString()}
-                </td>
-                <td className="p-3 text-right">—</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      <InviteUserForm />
+      <UsersManager initial={users} currentUserId={ctx.userId} />
     </div>
   );
 }

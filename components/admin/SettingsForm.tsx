@@ -16,6 +16,7 @@ import type { SiteSetting } from "@/types/database";
 // Friendly labels and descriptions for each setting key.
 // Anything not listed here falls back to a humanised version of the key.
 const FIELD_META: Record<string, { label: string; description?: string; multiline?: boolean }> = {
+  "currency.code": { label: "Currency", description: "ISO 4217 currency code used for all prices on the site (e.g. USD, EUR, GBP, PKR, AED, INR). Change here to update prices everywhere." },
   "hero.headline": { label: "Hero headline", description: "Big serif text in the homepage hero." },
   "hero.subtext": { label: "Hero subtext", description: "Short line below the headline.", multiline: true },
   "hero.cta_label": { label: "Hero button label", description: 'e.g. "Shop the collection"' },
@@ -44,6 +45,7 @@ const FIELD_META: Record<string, { label: string; description?: string; multilin
 };
 
 const SECTIONS: { key: string; label: string; description?: string }[] = [
+  { key: "general", label: "General", description: "Site-wide settings like currency." },
   { key: "homepage", label: "Homepage", description: "Hero copy and image at the top of the home page." },
   { key: "about", label: "About", description: "Brand story used on the homepage card and About page." },
   { key: "contact", label: "Contact", description: "How customers reach you." },

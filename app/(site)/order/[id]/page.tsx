@@ -5,6 +5,7 @@ import { PaymentProofUpload } from "@/components/forms/PaymentProofUpload";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getSiteSettings } from "@/lib/supabase/queries";
 import { formatPrice, formatDate } from "@/lib/utils/format";
+import { getServerCurrency } from "@/lib/utils/format-server";
 import type { Order, Product } from "@/types/database";
 
 export const dynamic = "force-dynamic";
@@ -19,6 +20,7 @@ const STATUS_STEPS = [
 
 export default async function OrderPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
+  const currency = await getServerCurrency();
   const supabase = createAdminClient();
   let order: (Order & { product: Product | null }) | null = null;
   let settings: Record<string, string> = {};
@@ -70,7 +72,7 @@ export default async function OrderPage({ params }: { params: Promise<{ id: stri
                 )}
               </div>
               <div className="text-right">
-                <div className="font-display text-2xl">{formatPrice(order.final_price)}</div>
+                <div className="font-display text-2xl">{formatPrice(order.final_price, currency)}</div>
               </div>
             </div>
           </div>
@@ -120,7 +122,7 @@ export default async function OrderPage({ params }: { params: Promise<{ id: stri
               {settings["bank.swift_code"] && (
                 <Detail label="SWIFT" value={settings["bank.swift_code"]} />
               )}
-              <Detail label="Amount" value={formatPrice(order.final_price)} />
+              <Detail label="Amount" value={formatPrice(order.final_price, currency)} />
               <Detail label="Reference" value={order.order_number} />
             </dl>
             {settings["bank.instructions"] && (

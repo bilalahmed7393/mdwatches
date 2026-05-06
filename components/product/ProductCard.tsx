@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ConditionBadge } from "@/components/product/ConditionBadge";
 import { formatPrice } from "@/lib/utils/format";
+import { getServerCurrency } from "@/lib/utils/format-server";
 import { cn } from "@/lib/utils/cn";
 import type { ProductWithImages } from "@/types/database";
 
@@ -10,7 +11,8 @@ interface ProductCardProps {
   priority?: boolean;
 }
 
-export function ProductCard({ product, priority = false }: ProductCardProps) {
+export async function ProductCard({ product, priority = false }: ProductCardProps) {
+  const currency = await getServerCurrency();
   const primaryImage = product.images[0]?.image_url;
   const secondaryImage = product.images[1]?.image_url;
   const isSold = product.status === "sold";
@@ -79,13 +81,13 @@ export function ProductCard({ product, priority = false }: ProductCardProps) {
         <div className="flex items-baseline gap-2">
           {product.offer_price && product.offer_price < product.price ? (
             <>
-              <span className="text-sm font-medium">{formatPrice(product.offer_price)}</span>
+              <span className="text-sm font-medium">{formatPrice(product.offer_price, currency)}</span>
               <span className="text-xs text-muted-foreground line-through">
-                {formatPrice(product.price)}
+                {formatPrice(product.price, currency)}
               </span>
             </>
           ) : (
-            <span className="text-sm font-medium">{formatPrice(product.price)}</span>
+            <span className="text-sm font-medium">{formatPrice(product.price, currency)}</span>
           )}
         </div>
       </div>

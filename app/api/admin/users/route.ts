@@ -3,23 +3,32 @@ import { adminHandler } from "@/lib/api/admin-handler";
 
 export const dynamic = "force-dynamic";
 
-const inviteSchema = z.object({
+const createSchema = z.object({
   email: z.string().email(),
+  password: z.string().min(8).max(72),
   full_name: z.string().min(1).max(120),
   role: z.enum(["owner", "staff"]).default("staff"),
 });
 
 export const POST = adminHandler(
-  { schema: inviteSchema, ownerOnly: true },
+  { schema: createSchema, ownerOnly: true },
   async ({ body, supabase }) => {
-    // Use Supabase Auth Admin API to invite by email.
-    const { data: invited, error } = await supabase.auth.admin.inviteUserByEmail(body.email);
-    if (error || !invited.user) throw error ?? new Error("invite_failed");
-    await supabase.from("admin_profiles").insert({
-      id: invited.user.id,
-      role: body.role,
-      full_name: body.full_name,
+    // Create the auth user with a password set directly — no email step.
+    const { data: created, error } = await supabase.auth.admin.createUser({
+      email: body.email,
+      password: body.password,
+      email_confirm: true,
     });
-    return { id: invited.user.id };
+    if (error || !created.user) throw error ?? new Error("create_failed");
+
+    const { error: profErr } = await supabase
+      .from("admin_profiles")
+      .insert({ id: created.user.id, role: body.role, full_name: body.full_name });
+    if (profErr) {
+      // Roll back — remove the auth user we just created
+      await supabase.auth.admin.deleteUser(created.user.id);
+      throw profErr;
+    }
+    return { id: created.user.id };
   },
 );

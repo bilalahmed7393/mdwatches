@@ -13,6 +13,7 @@ on conflict (slug) do nothing;
 
 -- ─── site_settings (CMS) ─────────────────────────────────────────────────
 insert into site_settings (key, value, type, section) values
+  ('currency.code', 'USD', 'text', 'general'),
   ('hero.headline', 'Stories on the wrist.', 'text', 'homepage'),
   ('hero.subtext', 'Hand-picked pre-loved watches. Authenticated. Ready to ship.', 'text', 'homepage'),
   ('hero.cta_label', 'Shop the collection', 'text', 'homepage'),

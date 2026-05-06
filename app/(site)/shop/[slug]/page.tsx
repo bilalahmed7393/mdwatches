@@ -7,6 +7,7 @@ import { ProductActions } from "@/components/product/ProductActions";
 import { ProductCard } from "@/components/product/ProductCard";
 import { Badge } from "@/components/ui/badge";
 import { formatPrice } from "@/lib/utils/format";
+import { getServerCurrency } from "@/lib/utils/format-server";
 import {
   getProductBySlug,
   getRelatedProducts,
@@ -41,6 +42,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function ProductPage({ params }: PageProps) {
   const { slug } = await params;
+  const currency = await getServerCurrency();
   let product;
   let related: Awaited<ReturnType<typeof getRelatedProducts>> = [];
   let conditions: Record<string, string> = {};
@@ -108,13 +110,13 @@ export default async function ProductPage({ params }: PageProps) {
         <div className="flex items-baseline gap-3">
           {product.offer_price && product.offer_price < product.price ? (
             <>
-              <span className="font-display text-3xl">{formatPrice(product.offer_price)}</span>
+              <span className="font-display text-3xl">{formatPrice(product.offer_price, currency)}</span>
               <span className="text-base text-muted-foreground line-through">
-                {formatPrice(product.price)}
+                {formatPrice(product.price, currency)}
               </span>
             </>
           ) : (
-            <span className="font-display text-3xl">{formatPrice(product.price)}</span>
+            <span className="font-display text-3xl">{formatPrice(product.price, currency)}</span>
           )}
           {isSold && <Badge variant="sold">Sold</Badge>}
         </div>

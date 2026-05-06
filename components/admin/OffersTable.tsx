@@ -13,12 +13,14 @@ import {
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import type { Offer, Product } from "@/types/database";
-import { formatDate, formatPrice } from "@/lib/utils/format";
+import { formatDate } from "@/lib/utils/format";
+import { useFormatPrice } from "@/lib/currency";
 
 type Row = Offer & { product: Pick<Product, "name" | "brand" | "price"> | null };
 
 export function OffersTable({ offers }: { offers: Row[] }) {
   const router = useRouter();
+  const formatPrice = useFormatPrice();
   const [counter, setCounter] = useState<{ id: string; message: string } | null>(null);
   const [busy, setBusy] = useState(false);
 

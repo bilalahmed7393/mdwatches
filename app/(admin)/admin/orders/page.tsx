@@ -3,6 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { createAdminClient } from "@/lib/supabase/admin";
 import type { Order, Product } from "@/types/database";
 import { formatDate, formatPrice } from "@/lib/utils/format";
+import { getServerCurrency } from "@/lib/utils/format-server";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Admin · Orders" };
@@ -16,6 +17,7 @@ const STATUS_COLUMNS: { key: Order["status"]; label: string }[] = [
 ];
 
 export default async function AdminOrdersPage() {
+  const currency = await getServerCurrency();
   const supabase = createAdminClient();
   const { data } = await supabase
     .from("orders")
@@ -55,7 +57,7 @@ export default async function AdminOrdersPage() {
                     </div>
                     <div className="mt-1 flex items-center justify-between text-xs">
                       <span>{o.customer_name}</span>
-                      <span>{formatPrice(o.final_price)}</span>
+                      <span>{formatPrice(o.final_price, currency)}</span>
                     </div>
                     <div className="mt-1 text-xs text-muted-foreground">
                       {formatDate(o.created_at)}

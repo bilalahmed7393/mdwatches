@@ -61,8 +61,8 @@ export default async function HomePage() {
           }}
         />
 
-        <div className="container-wide grid items-center gap-10 py-20 md:grid-cols-2 md:py-28">
-          <div className="space-y-7">
+        <div className="container-wide grid items-center gap-8 py-12 md:grid-cols-2 md:gap-10 md:py-28">
+          <div className="space-y-5 md:space-y-7">
             <span className="inline-flex items-center gap-2 rounded-full border border-foreground/10 bg-background/60 px-3 py-1 text-xs font-medium text-foreground/70 backdrop-blur">
               <span className="relative flex h-1.5 w-1.5">
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent opacity-75" />
@@ -71,10 +71,10 @@ export default async function HomePage() {
               New arrivals every week
             </span>
 
-            <h1 className="font-display text-5xl leading-[1.02] tracking-tight md:text-7xl">
+            <h1 className="font-display text-[2.75rem] leading-[1.02] tracking-tight md:text-7xl">
               {headline}
             </h1>
-            <p className="max-w-md text-lg text-muted-foreground">{subtext}</p>
+            <p className="max-w-md text-base text-muted-foreground md:text-lg">{subtext}</p>
             <div className="flex flex-wrap gap-3">
               <Button asChild size="lg" variant="accent" className="rounded-full px-7 shadow-lg shadow-accent/20 transition-transform hover:-translate-y-0.5">
                 <Link href={ctaHref}>
@@ -107,7 +107,7 @@ export default async function HomePage() {
               aria-hidden
               className="absolute -inset-8 -z-10 rounded-[3rem] bg-accent/15 blur-3xl"
             />
-            <div className="relative aspect-[4/5] overflow-hidden rounded-2xl bg-muted shadow-2xl ring-1 ring-foreground/5">
+            <div className="relative aspect-square md:aspect-[4/5] overflow-hidden rounded-2xl bg-muted shadow-2xl ring-1 ring-foreground/5">
               {heroImage ? (
                 <Image src={heroImage} alt="" fill priority className="object-cover transition-transform duration-700 hover:scale-105" />
               ) : featured[0]?.images[0]?.image_url ? (
@@ -145,7 +145,7 @@ export default async function HomePage() {
 
       {/* Featured */}
       {featured.length > 0 && (
-        <section className="container-wide py-12">
+        <section className="container-wide py-10 md:py-12">
           <div className="mb-6 flex items-end justify-between gap-4">
             <h2 className="font-display text-3xl tracking-tight md:text-4xl">Featured</h2>
             <Link href="/shop" className="text-sm underline-offset-4 hover:underline">
@@ -162,7 +162,7 @@ export default async function HomePage() {
 
       {/* New arrivals */}
       {newArrivals.length > 0 && (
-        <section className="container-wide py-12">
+        <section className="container-wide py-10 md:py-12">
           <div className="mb-6 flex items-end justify-between gap-4">
             <h2 className="font-display text-3xl tracking-tight md:text-4xl">
               New arrivals
@@ -183,7 +183,7 @@ export default async function HomePage() {
 
       {/* Collections */}
       {collections.length > 0 && (
-        <section className="container-wide py-12">
+        <section className="container-wide py-10 md:py-12">
           <h2 className="mb-6 font-display text-3xl tracking-tight md:text-4xl">
             Browse by collection
           </h2>
@@ -214,7 +214,7 @@ export default async function HomePage() {
       )}
 
       {/* Brand story */}
-      <section className="container-wide my-16 grid items-center gap-10 rounded-lg border bg-secondary/30 p-8 md:grid-cols-2 md:p-12">
+      <section className="container-wide my-10 grid items-center gap-8 rounded-lg border bg-secondary/30 p-6 md:my-16 md:gap-10 md:grid-cols-2 md:p-12">
         <div>
           <h2 className="font-display text-3xl tracking-tight md:text-4xl">
             Pre-loved, properly.
