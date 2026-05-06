@@ -80,7 +80,7 @@ begin
     (p1, 'https://images.unsplash.com/photo-1547996160-81dfa63595aa?w=1200', 0, true),
     (p1, 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=1200', 1, false),
     (p2, 'https://images.unsplash.com/photo-1524805444758-089113d48a6d?w=1200', 0, true),
-    (p3, 'https://images.unsplash.com/photo-1606293459379-fb9b4ff45f55?w=1200', 0, true),
+    (p3, 'https://images.unsplash.com/photo-1611591437281-460bfbe1220a?w=1200', 0, true),
     (p4, 'https://images.unsplash.com/photo-1622434641406-a158123450f9?w=1200', 0, true),
     (p5, 'https://images.unsplash.com/photo-1519741497674-611481863552?w=1200', 0, true);
 end $$;
