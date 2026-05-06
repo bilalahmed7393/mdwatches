@@ -1,0 +1,140 @@
+{
+  "info": {
+    "name": "MD Watches API",
+    "description": "API collection for the MD Watches storefront and admin portal.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Public",
+      "item": [
+        {
+          "name": "GET /api/products",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/products?status=active&sort=newest&page=1&page_size=12"
+          }
+        },
+        {
+          "name": "GET /api/products/:slug",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/products/rolex-submariner-16610"
+          }
+        },
+        {
+          "name": "GET /api/collections",
+          "request": { "method": "GET", "url": "{{base_url}}/api/collections" }
+        },
+        {
+          "name": "POST /api/orders",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}/api/orders",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"product_id\": \"<uuid>\",\n  \"customer_name\": \"Jane Doe\",\n  \"customer_email\": \"jane@example.com\",\n  \"customer_phone\": \"+15551234567\",\n  \"delivery_address\": \"123 Main St\\nCity, Country\"\n}"
+            }
+          }
+        },
+        {
+          "name": "POST /api/offers",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}/api/offers",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"product_id\": \"<uuid>\",\n  \"customer_name\": \"Jane Doe\",\n  \"customer_email\": \"jane@example.com\",\n  \"customer_phone\": \"+15551234567\",\n  \"offered_price\": 8500\n}"
+            }
+          }
+        },
+        {
+          "name": "POST /api/waitlist",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}/api/waitlist",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"product_id\": null,\n  \"customer_name\": \"Newsletter Signup\",\n  \"customer_email\": \"jane@example.com\",\n  \"notification_preference\": \"email\"\n}"
+            }
+          }
+        },
+        {
+          "name": "POST /api/contact",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}/api/contact",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Jane\",\n  \"email\": \"jane@example.com\",\n  \"message\": \"Do you ship to the EU?\"\n}"
+            }
+          }
+        },
+        {
+          "name": "POST /api/analytics/event",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}/api/analytics/event",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"event_type\": \"product_view\",\n  \"product_id\": \"<uuid>\"\n}"
+            }
+          }
+        },
+        {
+          "name": "GET /api/instagram/feed",
+          "request": { "method": "GET", "url": "{{base_url}}/api/instagram/feed" }
+        }
+      ]
+    },
+    {
+      "name": "Admin (requires Supabase auth cookie)",
+      "item": [
+        {
+          "name": "POST /api/admin/products",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{base_url}}/api/admin/products"
+          }
+        },
+        {
+          "name": "PUT /api/admin/products/:id",
+          "request": { "method": "PUT", "url": "{{base_url}}/api/admin/products/<id>" }
+        },
+        {
+          "name": "DELETE /api/admin/products/:id",
+          "request": { "method": "DELETE", "url": "{{base_url}}/api/admin/products/<id>" }
+        },
+        {
+          "name": "POST /api/admin/products/:id/images",
+          "request": { "method": "POST", "url": "{{base_url}}/api/admin/products/<id>/images" }
+        },
+        {
+          "name": "PATCH /api/admin/orders/:id",
+          "request": { "method": "PATCH", "url": "{{base_url}}/api/admin/orders/<id>" }
+        },
+        {
+          "name": "PATCH /api/admin/offers/:id",
+          "request": { "method": "PATCH", "url": "{{base_url}}/api/admin/offers/<id>" }
+        },
+        {
+          "name": "PUT /api/admin/settings",
+          "request": { "method": "PUT", "url": "{{base_url}}/api/admin/settings" }
+        },
+        {
+          "name": "POST /api/admin/instagram/sync",
+          "request": { "method": "POST", "url": "{{base_url}}/api/admin/instagram/sync" }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    { "key": "base_url", "value": "http://localhost:3000" }
+  ]
+}
