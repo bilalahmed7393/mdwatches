@@ -2,7 +2,7 @@
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Trash2, Star, Upload } from "lucide-react";
 import { toast } from "sonner";
@@ -35,6 +35,7 @@ export function ProductForm({ collections, initial, initialImages = [] }: Produc
 
   const {
     register,
+    control,
     handleSubmit,
     formState: { errors },
   } = useForm<ProductInput>({
@@ -202,12 +203,24 @@ export function ProductForm({ collections, initial, initialImages = [] }: Produc
             </Field>
           </div>
           <div className="flex gap-6">
-            <label className="flex items-center gap-2 text-sm">
-              <Checkbox {...register("has_box")} /> Box
-            </label>
-            <label className="flex items-center gap-2 text-sm">
-              <Checkbox {...register("has_papers")} /> Papers
-            </label>
+            <Controller
+              control={control}
+              name="has_box"
+              render={({ field }) => (
+                <label className="flex cursor-pointer items-center gap-2 text-sm">
+                  <Checkbox checked={field.value} onCheckedChange={field.onChange} /> Box
+                </label>
+              )}
+            />
+            <Controller
+              control={control}
+              name="has_papers"
+              render={({ field }) => (
+                <label className="flex cursor-pointer items-center gap-2 text-sm">
+                  <Checkbox checked={field.value} onCheckedChange={field.onChange} /> Papers
+                </label>
+              )}
+            />
           </div>
         </Section>
 
@@ -280,9 +293,16 @@ export function ProductForm({ collections, initial, initialImages = [] }: Produc
           <Field label="Stock quantity">
             <Input type="number" {...register("stock_quantity", { valueAsNumber: true })} />
           </Field>
-          <label className="flex items-center gap-2 text-sm">
-            <Checkbox {...register("is_featured")} /> Featured on homepage
-          </label>
+          <Controller
+            control={control}
+            name="is_featured"
+            render={({ field }) => (
+              <label className="flex cursor-pointer items-center gap-2 text-sm">
+                <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+                Featured on homepage
+              </label>
+            )}
+          />
         </Section>
 
         <Section title="Pricing">

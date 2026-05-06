@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, ShieldCheck, Sparkles, Truck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ProductCard } from "@/components/product/ProductCard";
 import { NewsletterForm } from "@/components/forms/NewsletterForm";
@@ -10,6 +10,14 @@ import {
   getNewArrivals,
   getSiteSettings,
 } from "@/lib/supabase/queries";
+
+const MARQUEE_ITEMS = [
+  "Authenticated by hand",
+  "Worldwide shipping",
+  "Bank-transfer payments",
+  "Insured & tracked delivery",
+  "30-day return window",
+];
 
 export default async function HomePage() {
   let featured: Awaited<ReturnType<typeof getFeaturedProducts>> = [];
@@ -39,42 +47,99 @@ export default async function HomePage() {
   return (
     <>
       {/* Hero */}
-      <section className="relative isolate overflow-hidden">
-        <div className="container-wide grid items-center gap-10 py-16 md:grid-cols-2 md:py-24">
-          <div className="space-y-6">
-            <h1 className="font-display text-5xl leading-[1.05] tracking-tight md:text-7xl">
+      <section className="relative isolate overflow-hidden grain">
+        {/* Animated gradient mesh */}
+        <div aria-hidden className="mesh-bg absolute inset-0 -z-10" />
+        {/* Soft horizontal lines for subtle texture */}
+        <div
+          aria-hidden
+          className="absolute inset-0 -z-10 opacity-[0.035]"
+          style={{
+            backgroundImage:
+              "linear-gradient(to bottom, transparent 0, transparent calc(100% - 1px), hsl(var(--foreground)) 100%)",
+            backgroundSize: "100% 5rem",
+          }}
+        />
+
+        <div className="container-wide grid items-center gap-10 py-20 md:grid-cols-2 md:py-28">
+          <div className="space-y-7">
+            <span className="inline-flex items-center gap-2 rounded-full border border-foreground/10 bg-background/60 px-3 py-1 text-xs font-medium text-foreground/70 backdrop-blur">
+              <span className="relative flex h-1.5 w-1.5">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent opacity-75" />
+                <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-accent" />
+              </span>
+              New arrivals every week
+            </span>
+
+            <h1 className="font-display text-5xl leading-[1.02] tracking-tight md:text-7xl">
               {headline}
             </h1>
             <p className="max-w-md text-lg text-muted-foreground">{subtext}</p>
             <div className="flex flex-wrap gap-3">
-              <Button asChild size="lg" variant="accent">
+              <Button asChild size="lg" variant="accent" className="rounded-full px-7 shadow-lg shadow-accent/20 transition-transform hover:-translate-y-0.5">
                 <Link href={ctaHref}>
                   {ctaLabel}
-                  <ArrowRight className="ml-2 h-4 w-4" />
+                  <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-0.5" />
                 </Link>
               </Button>
-              <Button asChild size="lg" variant="outline">
+              <Button asChild size="lg" variant="outline" className="rounded-full px-7 border-foreground/15 hover:bg-foreground/[0.04] transition-transform hover:-translate-y-0.5">
                 <Link href="/about">Our story</Link>
               </Button>
             </div>
+
+            {/* Trust signals */}
+            <div className="flex flex-wrap items-center gap-x-5 gap-y-2 pt-2 text-xs text-muted-foreground">
+              <span className="inline-flex items-center gap-1.5">
+                <ShieldCheck className="h-3.5 w-3.5" /> Authenticated
+              </span>
+              <span className="inline-flex items-center gap-1.5">
+                <Truck className="h-3.5 w-3.5" /> Worldwide shipping
+              </span>
+              <span className="inline-flex items-center gap-1.5">
+                <Sparkles className="h-3.5 w-3.5" /> Hand-inspected
+              </span>
+            </div>
           </div>
-          <div className="relative aspect-[4/5] overflow-hidden rounded-md bg-muted">
-            {heroImage ? (
-              <Image src={heroImage} alt="" fill priority className="object-cover" />
-            ) : featured[0]?.images[0]?.image_url ? (
-              <Image
-                src={featured[0].images[0].image_url}
-                alt={featured[0].name}
-                fill
-                priority
-                className="object-cover"
-              />
-            ) : (
-              <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
-                Hero image
-              </div>
-            )}
+
+          <div className="relative">
+            {/* Soft glow behind the image */}
+            <div
+              aria-hidden
+              className="absolute -inset-8 -z-10 rounded-[3rem] bg-accent/15 blur-3xl"
+            />
+            <div className="relative aspect-[4/5] overflow-hidden rounded-2xl bg-muted shadow-2xl ring-1 ring-foreground/5">
+              {heroImage ? (
+                <Image src={heroImage} alt="" fill priority className="object-cover transition-transform duration-700 hover:scale-105" />
+              ) : featured[0]?.images[0]?.image_url ? (
+                <Image
+                  src={featured[0].images[0].image_url}
+                  alt={featured[0].name}
+                  fill
+                  priority
+                  className="object-cover transition-transform duration-700 hover:scale-105"
+                />
+              ) : (
+                <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
+                  Hero image
+                </div>
+              )}
+            </div>
           </div>
+        </div>
+      </section>
+
+      {/* Marquee trust strip */}
+      <section
+        aria-hidden
+        className="relative -mt-2 overflow-hidden border-y bg-foreground py-4 text-background"
+      >
+        <div className="marquee text-[0.7rem] font-medium uppercase tracking-[0.32em]">
+          {[...MARQUEE_ITEMS, ...MARQUEE_ITEMS].map((item, i) => (
+            <span key={i} className="inline-flex items-center gap-12">
+              <span className="text-background/85">{item}</span>
+              <span aria-hidden className="text-accent">✦</span>
+            </span>
+          ))}
         </div>
       </section>
 

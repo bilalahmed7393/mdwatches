@@ -1,13 +1,16 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { Plus, Trash2 } from "lucide-react";
+import Image from "next/image";
+import { Plus, Trash2, Upload, ImageOff } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
+import { createClient } from "@/lib/supabase/client";
+import { nanoid } from "nanoid";
 import type { Collection } from "@/types/database";
 import { slugify } from "@/lib/utils/format";
 
@@ -21,6 +24,7 @@ export function CollectionsManager({ initial }: Props) {
   const [creating, setCreating] = useState(false);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
+  const [uploadingFor, setUploadingFor] = useState<string | null>(null);
 
   async function create() {
     if (!name.trim()) return;
@@ -76,31 +80,91 @@ export function CollectionsManager({ initial }: Props) {
       }),
     });
     if (res.ok) router.refresh();
+    else toast.error("Save failed");
+  }
+
+  async function uploadCover(id: string, file: File) {
+    setUploadingFor(id);
+    try {
+      const supabase = createClient();
+      const ext = file.name.split(".").pop() ?? "jpg";
+      const path = `collections/${id}/cover-${nanoid(10)}.${ext}`;
+      const { error: upErr } = await supabase.storage
+        .from("site-assets")
+        .upload(path, file, { upsert: true, contentType: file.type });
+      if (upErr) throw upErr;
+      const { data: pub } = supabase.storage.from("site-assets").getPublicUrl(path);
+      await patch(id, { cover_image_url: pub.publicUrl });
+      toast.success("Cover image updated.");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Upload failed");
+    } finally {
+      setUploadingFor(null);
+    }
   }
 
   return (
     <div className="space-y-4">
-      <div className="rounded-md border bg-background">
+      <div className="overflow-hidden rounded-md border bg-background">
         <table className="w-full text-sm">
           <thead className="border-b bg-secondary/40 text-left">
             <tr>
+              <th className="p-3 w-20">Cover</th>
               <th className="p-3">Name</th>
               <th className="p-3">Slug</th>
-              <th className="p-3">Order</th>
-              <th className="p-3">Active</th>
-              <th className="p-3"></th>
+              <th className="p-3 w-20">Order</th>
+              <th className="p-3 w-20">Active</th>
+              <th className="p-3 w-12"></th>
             </tr>
           </thead>
           <tbody className="divide-y">
             {initial.length === 0 && (
               <tr>
-                <td colSpan={5} className="p-6 text-center text-muted-foreground">
+                <td colSpan={6} className="p-6 text-center text-muted-foreground">
                   No collections yet.
                 </td>
               </tr>
             )}
             {initial.map((c) => (
               <tr key={c.id}>
+                <td className="p-3">
+                  <label
+                    className="group relative block h-14 w-14 cursor-pointer overflow-hidden rounded-md border bg-muted"
+                    title="Upload cover image"
+                  >
+                    {c.cover_image_url ? (
+                      <Image
+                        src={c.cover_image_url}
+                        alt=""
+                        fill
+                        sizes="56px"
+                        className="object-cover transition-opacity group-hover:opacity-60"
+                      />
+                    ) : (
+                      <span className="flex h-full w-full items-center justify-center text-muted-foreground">
+                        <ImageOff className="h-4 w-4" />
+                      </span>
+                    )}
+                    <span className="pointer-events-none absolute inset-0 flex items-center justify-center bg-foreground/40 opacity-0 transition-opacity group-hover:opacity-100">
+                      {uploadingFor === c.id ? (
+                        <span className="text-[10px] font-medium text-background">…</span>
+                      ) : (
+                        <Upload className="h-4 w-4 text-background" />
+                      )}
+                    </span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      disabled={uploadingFor === c.id}
+                      onChange={(e) => {
+                        const f = e.target.files?.[0];
+                        if (f) uploadCover(c.id, f);
+                        e.target.value = "";
+                      }}
+                    />
+                  </label>
+                </td>
                 <td className="p-3 font-medium">{c.name}</td>
                 <td className="p-3 text-muted-foreground">{c.slug}</td>
                 <td className="p-3">{c.display_order}</td>
@@ -141,6 +205,11 @@ export function CollectionsManager({ initial }: Props) {
           <Plus className="mr-2 h-4 w-4" /> New collection
         </Button>
       )}
+
+      <p className="text-xs text-muted-foreground">
+        Hover any cover thumbnail to upload an image. Cover images appear in the homepage's
+        "Browse by collection" section and on the /collections page.
+      </p>
     </div>
   );
 }

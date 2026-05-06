@@ -1,36 +1,54 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Search } from "lucide-react";
 import { MobileNav } from "@/components/layout/MobileNav";
+import { HeaderNav, type HeaderNavData } from "@/components/layout/HeaderNav";
 import { Button } from "@/components/ui/button";
+import { getCollections, getDistinctBrands } from "@/lib/supabase/queries";
 
-const navLinks = [
-  { href: "/shop", label: "Shop" },
-  { href: "/collections", label: "Collections" },
-  { href: "/about", label: "About" },
-  { href: "/contact", label: "Contact" },
-];
+const FALLBACK_CATEGORIES = ["Diver", "Dress", "Sport", "Chronograph", "Pilot", "Vintage"];
 
-export function Header() {
+async function getNavData(): Promise<HeaderNavData> {
+  try {
+    const [brands, collections] = await Promise.all([
+      getDistinctBrands(),
+      getCollections(),
+    ]);
+    return {
+      brands,
+      categories: FALLBACK_CATEGORIES,
+      collections: collections.map((c) => ({ slug: c.slug, name: c.name })),
+    };
+  } catch {
+    return { brands: [], categories: FALLBACK_CATEGORIES, collections: [] };
+  }
+}
+
+export async function Header() {
+  const data = await getNavData();
+
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-background/85 backdrop-blur supports-[backdrop-filter]:bg-background/70">
       <div className="container-wide flex h-16 items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <MobileNav links={navLinks} />
-          <Link href="/" className="font-display text-xl tracking-[0.15em]">
-            MD WATCHES
+          <MobileNav navData={data} />
+          <Link href="/" aria-label="MD Watches home" className="flex items-center gap-2">
+            <Image
+              src="/brand/md-watches-mark.png"
+              alt=""
+              width={36}
+              height={36}
+              priority
+              className="h-9 w-auto"
+            />
+            <span className="font-display text-lg tracking-[0.2em] hidden sm:inline">
+              MD WATCHES
+            </span>
           </Link>
         </div>
-        <nav aria-label="Primary" className="hidden items-center gap-8 md:flex">
-          {navLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className="text-sm font-medium text-foreground/80 transition hover:text-foreground"
-            >
-              {link.label}
-            </Link>
-          ))}
-        </nav>
+
+        <HeaderNav {...data} />
+
         <div className="flex items-center gap-1">
           <Button asChild variant="ghost" size="icon" aria-label="Search">
             <Link href="/shop">
