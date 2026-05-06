@@ -1,6 +1,7 @@
 import { AnnouncementBar } from "@/components/layout/AnnouncementBar";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
+import { FloatingWhatsApp } from "@/components/layout/FloatingWhatsApp";
 import { CurrencyProvider } from "@/lib/currency";
 import { getSiteSettings } from "@/lib/supabase/queries";
 
@@ -19,6 +20,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
       <Header />
       <main className="min-h-[calc(100vh-4rem)]">{children}</main>
       <Footer />
+      <FloatingWhatsApp />
     </CurrencyProvider>
   );
 }
