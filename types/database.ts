@@ -140,6 +140,20 @@ export interface AdminProfile {
   created_at: string;
 }
 
+export type ContactMessageStatus = "unread" | "read" | "replied";
+export interface ContactMessage {
+  id: string;
+  created_at: string;
+  name: string;
+  email: string;
+  message: string;
+  status: ContactMessageStatus;
+  admin_notes: string | null;
+  replied_at: string | null;
+  user_agent: string | null;
+  ip_address: string | null;
+}
+
 export interface PromoCode {
   id: string;
   code: string;
@@ -197,6 +211,7 @@ export interface Database {
       admin_profiles: { Row: AdminProfile; Insert: Partial<AdminProfile>; Update: Partial<AdminProfile> };
       promo_codes: { Row: PromoCode; Insert: Partial<PromoCode>; Update: Partial<PromoCode> };
       instagram_posts: { Row: InstagramPost; Insert: Partial<InstagramPost>; Update: Partial<InstagramPost> };
+      contact_messages: { Row: ContactMessage; Insert: Partial<ContactMessage>; Update: Partial<ContactMessage> };
     };
     Views: {
       admin_dashboard_stats: { Row: DashboardStats };

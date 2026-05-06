@@ -19,14 +19,20 @@ export async function POST(request: Request) {
   }
 
   const supabase = createAdminClient();
-  const { error } = await supabase.from("analytics_events").insert({
-    event_type: "contact_form_submit",
-    metadata: parsed.data,
+  const { error } = await supabase.from("contact_messages").insert({
+    name: parsed.data.name,
+    email: parsed.data.email,
+    message: parsed.data.message,
+    user_agent: request.headers.get("user-agent") ?? null,
+    // Trust the typical Vercel/proxy header chain for the originating IP
+    ip_address:
+      request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
+      request.headers.get("x-real-ip") ??
+      null,
   });
 
   if (error) {
     return NextResponse.json({ error: "Could not submit message" }, { status: 500 });
   }
-  // TODO(owner): wire to Resend or admin email notification.
   return NextResponse.json({ ok: true });
 }
