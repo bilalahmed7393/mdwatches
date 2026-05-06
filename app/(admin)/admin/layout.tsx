@@ -16,7 +16,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
 
   return (
     <CurrencyProvider code={currency}>
-      <div className="flex min-h-screen">
+      <div className="flex min-h-screen flex-col md:flex-row">
         <AdminSidebar role={ctx.profile.role} email={ctx.email ?? ""} />
         <main className="flex-1 overflow-x-hidden bg-secondary/20 p-4 md:p-8">
           <div className="mx-auto max-w-6xl">{children}</div>

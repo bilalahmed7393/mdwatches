@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import {
   LayoutDashboard,
   Package,
@@ -14,6 +15,8 @@ import {
   Bell,
   UserCog,
   LogOut,
+  Menu,
+  X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -36,7 +39,18 @@ const NAV = [
 export function AdminSidebar({ role, email }: { role: "owner" | "staff"; email: string }) {
   const pathname = usePathname();
   const router = useRouter();
-  const items = role === "owner" ? [...NAV, { href: "/admin/users", label: "Users", icon: Users }] : NAV;
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const items =
+    role === "owner" ? [...NAV, { href: "/admin/users", label: "Users", icon: Users }] : NAV;
+
+  // Lock body scroll when drawer is open (DOM side-effect, not React state)
+  useEffect(() => {
+    if (typeof document === "undefined") return;
+    document.body.style.overflow = mobileOpen ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [mobileOpen]);
 
   async function signOut() {
     const supabase = createClient();
@@ -45,13 +59,27 @@ export function AdminSidebar({ role, email }: { role: "owner" | "staff"; email: 
     router.refresh();
   }
 
-  return (
-    <aside className="hidden w-60 shrink-0 border-r bg-background md:flex md:flex-col">
-      <div className="border-b p-4">
-        <Link href="/admin/dashboard" className="font-display text-lg tracking-[0.12em]">
-          MD WATCHES
-        </Link>
-        <p className="text-xs text-muted-foreground">Admin · {role}</p>
+  const navContent = (
+    <>
+      <div className="flex items-center justify-between border-b p-4">
+        <div>
+          <Link
+            href="/admin/dashboard"
+            className="font-display text-lg tracking-[0.12em]"
+          >
+            MD WATCHES
+          </Link>
+          <p className="text-xs text-muted-foreground">Admin · {role}</p>
+        </div>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="md:hidden"
+          aria-label="Close menu"
+          onClick={() => setMobileOpen(false)}
+        >
+          <X className="h-5 w-5" />
+        </Button>
       </div>
       <nav className="flex-1 overflow-y-auto p-2">
         {items.map((item) => {
@@ -61,6 +89,7 @@ export function AdminSidebar({ role, email }: { role: "owner" | "staff"; email: 
             <Link
               key={item.href}
               href={item.href}
+              onClick={() => setMobileOpen(false)}
               className={cn(
                 "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
                 active ? "bg-foreground text-background" : "hover:bg-muted",
@@ -74,11 +103,55 @@ export function AdminSidebar({ role, email }: { role: "owner" | "staff"; email: 
       </nav>
       <Separator />
       <div className="space-y-2 p-3">
-        <p className="truncate text-xs text-muted-foreground" title={email}>{email}</p>
+        <p className="truncate text-xs text-muted-foreground" title={email}>
+          {email}
+        </p>
         <Button variant="outline" size="sm" className="w-full" onClick={signOut}>
           <LogOut className="mr-2 h-3.5 w-3.5" /> Sign out
         </Button>
       </div>
-    </aside>
+    </>
+  );
+
+  return (
+    <>
+      {/* Mobile top bar */}
+      <div className="sticky top-0 z-30 flex h-14 items-center gap-3 border-b bg-background px-4 md:hidden">
+        <Button
+          variant="ghost"
+          size="icon"
+          aria-label="Open admin menu"
+          onClick={() => setMobileOpen(true)}
+        >
+          <Menu className="h-5 w-5" />
+        </Button>
+        <Link
+          href="/admin/dashboard"
+          className="font-display text-base tracking-[0.12em]"
+        >
+          MD WATCHES
+        </Link>
+        <span className="ml-auto text-xs text-muted-foreground">{role}</span>
+      </div>
+
+      {/* Mobile drawer */}
+      {mobileOpen && (
+        <div className="fixed inset-0 z-40 md:hidden">
+          <button
+            aria-label="Close menu"
+            className="absolute inset-0 bg-foreground/40 backdrop-blur-sm"
+            onClick={() => setMobileOpen(false)}
+          />
+          <aside className="relative flex h-full w-72 flex-col bg-background shadow-xl">
+            {navContent}
+          </aside>
+        </div>
+      )}
+
+      {/* Desktop sidebar */}
+      <aside className="hidden w-60 shrink-0 border-r bg-background md:flex md:flex-col">
+        {navContent}
+      </aside>
+    </>
   );
 }
